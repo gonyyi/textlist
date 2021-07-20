@@ -7,8 +7,8 @@ import (
 
 func TestList(t *testing.T) {
 	c := textlist.NewList()
-	c.Add("test", "test123", "test", "test234")
-	d := textlist.NewList("a", "a1", "test")
+	c.Add("test", "test123", "test", "x", "test234")
+	d := textlist.NewList("a", "a1", "test", "x")
 
 	out1, out2 := textlist.Compare(c,d)
 
@@ -18,6 +18,7 @@ func TestList(t *testing.T) {
 	for _, v := range out2 {
 		println("removed:", v)
 	}
+	println("same:", c.Remove(out2...).String())
 }
 
 func TestList_Reset(t *testing.T) {
@@ -29,4 +30,8 @@ func TestList_Reset(t *testing.T) {
 	println(c.Size(), "exp 4")
 	c.Reset()
 	println(c.Size(), "exp 0")
+	c.Add("a","b","c")
+	println(c.Size(), "exp 3")
+	c.Remove("b", "c")
+	println(c.Size(), "exp 1")
 }
