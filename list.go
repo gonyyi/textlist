@@ -2,6 +2,7 @@ package textlist
 
 import (
 	"bufio"
+	"bytes"
 	"os"
 	"strings"
 )
@@ -14,13 +15,32 @@ func NewList(s ...string) List {
 	return l
 }
 
-func NewListFromFile(filename string, flag Option) (List, error) {
+func NewListFromFile(filename, delim string, flag Option) (List, error) {
 	fi, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
+	defer fi.Close()
+
 	l := NewList()
 	bfi := bufio.NewScanner(fi)
+
+	bfi.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+		if atEOF && len(data) == 0 {
+			return 0, nil, nil
+		}
+		// bytes.IndexAny will take string, but if any of the string matches, it will trigger.
+		// therefore, can't use it.
+		if i := bytes.Index(data, []byte(delim)); i >= 0 {
+			return i + len(delim), data[0:i], nil
+		}
+		// If we're at EOF, we have a final, non-terminated line. Return it.
+		if atEOF {
+			return len(data), data, nil
+		}
+		// Request more data.
+		return 0, nil, nil
+	})
 
 	for bfi.Scan() {
 		t := bfi.Text()
