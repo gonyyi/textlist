@@ -15,7 +15,7 @@ func main() {
 	switch os.Args[1] {
 	case "compare", "cmp", "comp":
 		if len(os.Args) > 3 {
-			nochange, added, removed, err := compare(os.Args[2], os.Args[3])
+			nochange, added, removed, err := compare(os.Args[2], os.Args[3], "::")
 			if err != nil {
 				println(err.Error())
 				return
@@ -37,12 +37,12 @@ func main() {
 	}
 }
 
-func compare(fileFrom, fileTo string) (nochange []string, added []string, removed []string, err error) {
-	lFrom, err := textlist.NewListFromFile(fileFrom, textlist.FILE_TRIMSPACE|textlist.FILE_NEWLINE)
+func compare(fileFrom, fileTo, delim string) (nochange []string, added []string, removed []string, err error) {
+	lFrom, err := textlist.NewListFromFile(fileFrom, delim, textlist.FILE_TRIMSPACE|textlist.FILE_NEWLINE)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	lTo, err := textlist.NewListFromFile(fileTo, textlist.FILE_TRIMSPACE|textlist.FILE_NEWLINE)
+	lTo, err := textlist.NewListFromFile(fileTo, delim, textlist.FILE_TRIMSPACE|textlist.FILE_NEWLINE)
 	if err != nil {
 		return nil, nil, nil, err
 	}
