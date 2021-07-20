@@ -56,9 +56,11 @@ func (l List) Add(s ...string) List {
 	}
 	return l
 }
-func (l List) Remove(s string) List {
-	l[s] = struct{}{}
-	delete(l, s)
+
+func (l List) Remove(s ...string) List {
+	for _, v := range s {
+		delete(l, v)
+	}
 	return l
 }
 
