@@ -13,12 +13,15 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case "compare", "cmp":
+	case "compare", "cmp", "comp":
 		if len(os.Args) > 3 {
-			added, removed, err := compare(os.Args[2], os.Args[3])
+			nochange, added, removed, err := compare(os.Args[2], os.Args[3])
 			if err != nil {
 				println(err.Error())
 				return
+			}
+			for _, v := range nochange {
+				println("= " + v)
 			}
 			for _, v := range added {
 				println("+ " + v)
@@ -34,15 +37,16 @@ func main() {
 	}
 }
 
-func compare(fileFrom, fileTo string) (added []string, removed []string, err error) {
+func compare(fileFrom, fileTo string) (nochange []string, added []string, removed []string, err error) {
 	lFrom, err := textlist.NewListFromFile(fileFrom, textlist.FILE_TRIMSPACE|textlist.FILE_NEWLINE)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	lTo, err := textlist.NewListFromFile(fileTo, textlist.FILE_TRIMSPACE|textlist.FILE_NEWLINE)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	added, removed = textlist.Compare(lFrom, lTo)
+	nochange = lFrom.Remove(added...).Remove(removed...).Strings()
 	return
 }
